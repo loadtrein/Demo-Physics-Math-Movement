@@ -15,13 +15,14 @@ class DEMO_API APhysicsProjectile : public AActor
 	UPROPERTY(VisibleDefaultsOnly, Category=Projectile)
 	class UStaticMeshComponent* SphereMesh;
 
-	/** Physics Parameters */
+	/** Firing Position */
 	UPROPERTY(Transient)
 	FVector m_InitialPosition;
 
 	UPROPERTY(Transient)
 	FVector m_CurrentPosition;
 
+	/** Speed at which the projectile left the weapon*/
 	UPROPERTY(Transient)
 	float m_Speed;
 
@@ -31,6 +32,7 @@ class DEMO_API APhysicsProjectile : public AActor
 	UPROPERTY(Transient)
 	float m_GravityValue;
 
+	/** Vector holding the gravity value on the z component */
 	UPROPERTY(Transient)
 	FVector m_GravityVector;
 
@@ -41,6 +43,8 @@ public:
 
 	APhysicsProjectile();
 	virtual void Tick(float DeltaTime) override;
+
+	/** Set physics parameters from weapon */
 	void SetPhysicsParameters(float Gravity, float Speed, FVector FiringDirection);
 
 protected:

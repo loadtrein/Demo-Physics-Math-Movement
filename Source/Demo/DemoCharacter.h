@@ -30,9 +30,11 @@ class ADemoCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FirstPersonCameraComponent;
 
+	/** Weapon class to swapn */
 	UPROPERTY(EditDefaultsOnly, Category=Weapon)
 	TSubclassOf<class ADemoWeapon> DemoWeaponClass;
 
+	/** Demo Weapon */
 	UPROPERTY(Transient)
 	ADemoWeapon* m_DemoWeapon;
 
@@ -71,10 +73,12 @@ protected:
 	
 	/** Fires a projectile. */
 	void OnFire();
-	void OnFireLMB();
+
+	/** Changes Weapon Fire Mode */
 	void OnWeaponFireModeChange();
 
-	void PlaySoundAndAnims();
+	/** Plays sound and animations when firing */
+	void PlaySoundAndAnimations();
 
 	/** Handles moving forward/backward */
 	void MoveForward(float Val);
@@ -98,14 +102,6 @@ protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 	// End of APawn interface
-
-	/* 
-	 * Configures input for touchscreen devices if there is a valid touch interface for doing so 
-	 *
-	 * @param	InputComponent	The input component pointer to bind controls to
-	 * @returns true if touch controls were enabled.
-	 */
-	bool EnableTouchscreenMovement(UInputComponent* InputComponent);
 
 public:
 	/** Returns Mesh1P subobject **/

@@ -67,6 +67,7 @@ void ADemoCharacter::BeginPlay()
 
 	Mesh1P->SetHiddenInGame(false, true);
 
+	// Spawn Demo Weapon Actor
 	UWorld* const World = GetWorld();
 	if (World != nullptr)
 	{
@@ -92,7 +93,7 @@ void ADemoCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
 	// Bind fire event
-	PlayerInputComponent->BindAction("FireLMB", IE_Pressed, this, &ADemoCharacter::OnFireLMB);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ADemoCharacter::OnFire);
 	PlayerInputComponent->BindAction("ChangeWeaponFireMode", IE_Pressed, this, &ADemoCharacter::OnWeaponFireModeChange);
 
 	// Bind movement events
@@ -108,32 +109,7 @@ void ADemoCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ADemoCharacter::LookUpAtRate);
 }
 
-// Funcion original de disparo
 void ADemoCharacter::OnFire()
-{
-	// try and fire a projectile
-	if (ProjectileClass != NULL)
-	{
-		UWorld* const World = GetWorld();
-		if (World != NULL)
-		{
-			const FRotator SpawnRotation = GetControlRotation();
-			// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
-			const FVector SpawnLocation = ((FP_MuzzleLocation != nullptr) ? FP_MuzzleLocation->GetComponentLocation() : GetActorLocation()) + SpawnRotation.RotateVector(GunOffset);
-
-			//Set Spawn Collision Handling Override
-			FActorSpawnParameters ActorSpawnParams;
-			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
-
-			// spawn the projectile at the muzzle
-			World->SpawnActor<ADemoProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
-		}
-	}
-
-	PlaySoundAndAnims();
-}
-
-void ADemoCharacter::OnFireLMB()
 {
 	if (m_DemoWeapon == nullptr)
 	{
@@ -141,7 +117,7 @@ void ADemoCharacter::OnFireLMB()
 	}
 
 	m_DemoWeapon->Fire();
-	PlaySoundAndAnims();
+	PlaySoundAndAnimations();
 }
 
 void ADemoCharacter::OnWeaponFireModeChange()
@@ -154,7 +130,7 @@ void ADemoCharacter::OnWeaponFireModeChange()
 	m_DemoWeapon->ChangeFireMode();
 }
 
-void ADemoCharacter::PlaySoundAndAnims()
+void ADemoCharacter::PlaySoundAndAnimations()
 {
 	// try and play the sound if specified
 	if (FireSound != NULL)

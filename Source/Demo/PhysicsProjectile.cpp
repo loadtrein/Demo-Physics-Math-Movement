@@ -8,8 +8,6 @@ APhysicsProjectile::APhysicsProjectile()
 	PrimaryActorTick.bCanEverTick = true;
 
 	SphereMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SphereMesh"));
-	
-	// Set as root component
 	RootComponent = SphereMesh;
 
 	InitialLifeSpan = 5.0f;
