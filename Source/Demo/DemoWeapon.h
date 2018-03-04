@@ -30,15 +30,15 @@ class DEMO_API ADemoWeapon : public AActor
 	ADemoCharacter* m_DemoCharacter;
 
 	/** Physics Projectile Class to spawn */
-	UPROPERTY(EditDefaultsOnly, Category=Projectile)
+	UPROPERTY(EditDefaultsOnly, Category=PhysicsProjectile)
 	TSubclassOf<class APhysicsProjectile> PhysicsProjectileClass;
 
 	/** Physics Projectile Initial Speed */
-	UPROPERTY(EditAnywhere, Transient, Category=Projectile)
+	UPROPERTY(EditAnywhere, Transient, Category=PhysicsProjectile)
 	float m_PhysicsProjectileSpeed;
 
 	/** Gravity Value */
-	UPROPERTY(EditAnywhere, Transient, Category=Projectile)
+	UPROPERTY(EditAnywhere, Transient, Category=PhysicsProjectile)
 	float m_GravityValue;
 
 	/** Landing Marker Class to spawn */
@@ -50,15 +50,22 @@ class DEMO_API ADemoWeapon : public AActor
 	AActor* m_LandingMarker;
 
 	/** Guided Projectile Class to spawn */
-	UPROPERTY(EditDefaultsOnly, Category=Projectile)
+	UPROPERTY(EditDefaultsOnly, Category=GuidedProjectile)
 	TSubclassOf<class ALinearProjectile> GuidedProjectileClass;
 
 	UPROPERTY(Transient)
 	ALinearProjectile* m_GuidedProjectile;
 
 	/** Guided Projectile Speed */
-	UPROPERTY(EditAnywhere, Transient, Category = Projectile)
+	UPROPERTY(EditAnywhere, Transient, Category=GuidedProjectile)
 	float m_GuidedProjectileSpeed;
+
+	/** Guided Projectile Speed */
+	UPROPERTY(EditAnywhere, Transient, Category=GuidedProjectile)
+	float m_GuidedProjectileDistanceToObjectiveThreshold;
+
+	UPROPERTY(EditAnywhere, Transient, Category=GuidedProjectile)
+	float m_GuidedProjectileAngularVelocity;
 
 public:
 	
@@ -89,6 +96,6 @@ private:
 	bool FireGuidedProjectile(const FVector& SpawnLocation, const FRotator& SpawnRotation);
 
 	/** Update Guided Projectile Direction while on Guided Fire Mode */
-	void GuideGuidedProjectile();
+	void GuideGuidedProjectile(float DeltaTime);
 
 };

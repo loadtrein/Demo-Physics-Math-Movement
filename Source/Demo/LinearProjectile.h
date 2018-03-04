@@ -12,12 +12,8 @@ class DEMO_API ALinearProjectile : public AActor
 	GENERATED_BODY()
 
 	/** Sphere component */
-	UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
+	UPROPERTY(VisibleDefaultsOnly, Category=Projectile)
 	class UStaticMeshComponent* SphereMesh;
-
-	/** Firing Position */
-	UPROPERTY(Transient)
-	FVector m_InitialPosition;
 
 	UPROPERTY(Transient)
 	FVector m_CurrentPosition;
@@ -29,8 +25,11 @@ class DEMO_API ALinearProjectile : public AActor
 	UPROPERTY(Transient)
 	FVector m_VelocityDirection;
 
-	UPROPERTY(Transient)
-	float m_CurrentTime;
+public:
+
+	/** Sound to play on destroy */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Sound)
+	class USoundBase* m_DestroySound;
 	
 public:	
 	
@@ -40,6 +39,8 @@ public:
 	/** Set physics parameters from weapon */
 	void SetSpeed(float Speed);
 	void SetVelocityDirection(FVector VelocityDirection);
+	FVector GetVelocityDirection();
+	void DestroyProjectile();
 
 protected:
 	

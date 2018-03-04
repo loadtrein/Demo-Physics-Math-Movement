@@ -4,6 +4,7 @@
 #include "DemoCharacter.h"
 #include "PhysicsProjectile.h"
 #include "LinearProjectile.h"
+#include "DrawDebugHelpers.h"
 
 #pragma optimize("",off)
 ADemoWeapon::ADemoWeapon()
@@ -16,6 +17,8 @@ ADemoWeapon::ADemoWeapon()
 	m_GravityValue = -980.0f;
 
 	m_GuidedProjectileSpeed = 3000.0f;
+	m_GuidedProjectileDistanceToObjectiveThreshold = 5.0f;
+	m_GuidedProjectileAngularVelocity = 1.0f;
 }
 
 void ADemoWeapon::BeginPlay()
@@ -45,7 +48,7 @@ void ADemoWeapon::Tick(float DeltaTime)
 
 	if (m_WeaponFireMode == EWeaponFireMode::FM_Guided)
 	{
-		GuideGuidedProjectile();
+		GuideGuidedProjectile(DeltaTime);
 	}
 }
 
@@ -194,14 +197,71 @@ bool ADemoWeapon::FireGuidedProjectile(const FVector& SpawnLocation, const FRota
 		return false;
 	}
 
-	m_GuidedProjectile->SetSpeed(m_PhysicsProjectileSpeed);
+	m_GuidedProjectile->SetSpeed(m_GuidedProjectileSpeed);
 	m_GuidedProjectile->SetVelocityDirection(SpawnRotation.Vector());
 	return true;
 }
 
-void ADemoWeapon::GuideGuidedProjectile()
+void ADemoWeapon::GuideGuidedProjectile(float DeltaTime)
 {
+	UWorld* const World = GetWorld();
+	if (World == nullptr || m_DemoCharacter == nullptr)
+	{
+		return;
+	}
 
+	if (m_GuidedProjectile == nullptr || m_GuidedProjectile->IsPendingKill())
+	{
+		return;
+	}
+
+	// Get the pawn's camera transform.
+	FVector CameraLocation;
+	FRotator CameraRotation;
+	m_DemoCharacter->GetActorEyesViewPoint(CameraLocation, CameraRotation);
+
+	FVector Start = CameraLocation + CameraRotation.Vector() * 100.0f;
+	FVector End = Start + CameraRotation.Vector() * 3000.0f;
+	FVector TargetLocation = End;
+
+	FCollisionQueryParams TraceParams;
+	TraceParams.bTraceComplex = true;
+	TraceParams.bTraceAsyncScene = true;
+	TraceParams.bReturnPhysicalMaterial = false;
+	TraceParams.AddIgnoredActor(this);
+	TraceParams.AddIgnoredActor(m_GuidedProjectile);
+	TraceParams.AddIgnoredActor(m_DemoCharacter);
+	TraceParams.AddIgnoredActor(m_LandingMarker);
+
+	FHitResult Hit(ForceInit);
+	if (World->LineTraceSingleByChannel(Hit, Start, End, ECC_Pawn, TraceParams))
+	{
+		TargetLocation = Hit.Location;
+	}
+
+	// Draw Sphere to show where the projectile will be guided to
+	DrawDebugSphere(World, TargetLocation, 20.0F, 100, FColor::Red);
+
+	float CurrentDistanceToObjective = FVector::DistSquared(m_GuidedProjectile->GetActorLocation(), TargetLocation);
+	if (CurrentDistanceToObjective <= FMath::Square(m_GuidedProjectileDistanceToObjectiveThreshold))
+	{
+		m_GuidedProjectile->DestroyProjectile();
+		return;
+	}
+	
+	FVector ProjectileDirection = m_GuidedProjectile->GetVelocityDirection();
+	ProjectileDirection.Normalize();
+	FVector DesiredVelocity = TargetLocation - m_GuidedProjectile->GetActorLocation();
+	DesiredVelocity.Normalize();
+
+	if (ProjectileDirection.Equals(DesiredVelocity))
+	{
+		return;
+	}
+
+	FVector CurrentVelocity = ProjectileDirection + (DesiredVelocity - ProjectileDirection) * DeltaTime * m_GuidedProjectileAngularVelocity;
+	CurrentVelocity.Normalize();
+	m_GuidedProjectile->SetVelocityDirection(CurrentVelocity);
 }
 
 #pragma optimize("",on)
