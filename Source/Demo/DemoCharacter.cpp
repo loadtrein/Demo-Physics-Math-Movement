@@ -116,8 +116,10 @@ void ADemoCharacter::OnFire()
 		return;
 	}
 
-	m_DemoWeapon->Fire();
-	PlaySoundAndAnimations();
+	if (m_DemoWeapon->Fire())
+	{
+		PlaySoundAndAnimations();
+	}
 }
 
 void ADemoCharacter::OnWeaponFireModeChange()

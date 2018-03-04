@@ -3,6 +3,7 @@
 #include "DemoWeapon.h"
 #include "DemoCharacter.h"
 #include "PhysicsProjectile.h"
+#include "LinearProjectile.h"
 
 #pragma optimize("",off)
 ADemoWeapon::ADemoWeapon()
@@ -13,6 +14,8 @@ ADemoWeapon::ADemoWeapon()
 	
 	m_PhysicsProjectileSpeed = 3000.0f;
 	m_GravityValue = -980.0f;
+
+	m_GuidedProjectileSpeed = 3000.0f;
 }
 
 void ADemoWeapon::BeginPlay()
@@ -42,7 +45,7 @@ void ADemoWeapon::Tick(float DeltaTime)
 
 	if (m_WeaponFireMode == EWeaponFireMode::FM_Guided)
 	{
-		
+		GuideGuidedProjectile();
 	}
 }
 
@@ -79,42 +82,62 @@ void ADemoWeapon::ChangeFireMode()
 	}
 }
 
-void ADemoWeapon::Fire()
+bool ADemoWeapon::Fire()
 {
+	if (m_DemoCharacter == nullptr)
+	{
+		return false;
+	}
+
+	// Obtain rotation from pawn and location from muzzle
+	const FRotator SpawnRotation = m_DemoCharacter->GetControlRotation();
+	
+	// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
+	USceneComponent* const MuzzleLocation = m_DemoCharacter->GetFirstPersonMuzzleLocation();
+	const FVector SpawnLocation = ((MuzzleLocation != nullptr) ? MuzzleLocation->GetComponentLocation() : m_DemoCharacter->GetActorLocation()) + SpawnRotation.RotateVector(m_DemoCharacter->GunOffset);
+
+	bool fireOk = false;
+
 	switch (m_WeaponFireMode)
 	{
 	case EWeaponFireMode::FM_Physics:
-		FirePhysicsProjectile();
+		
+		fireOk = FirePhysicsProjectile(SpawnLocation, SpawnRotation);
+		
 		break;
+
 	case EWeaponFireMode::FM_Guided:
-		FireGuidedProjectile();
+		
+		// Just have one guided projectile at a time
+		if (m_GuidedProjectile == nullptr || m_GuidedProjectile->IsPendingKill())
+		{
+			fireOk = FireGuidedProjectile(SpawnLocation, SpawnRotation);
+		}
+
 		break;
 	}
+
+	return fireOk;
 }
 
-void ADemoWeapon::FirePhysicsProjectile()
+bool ADemoWeapon::FirePhysicsProjectile(const FVector& SpawnLocation, const FRotator& SpawnRotation)
 {
 	UWorld* const World = GetWorld();
-	if (PhysicsProjectileClass == nullptr || World == nullptr || m_DemoCharacter == nullptr)
+	if (PhysicsProjectileClass == nullptr || World == nullptr)
 	{
-		return;
+		return false;
 	}
-
-	const FRotator SpawnRotation = m_DemoCharacter->GetControlRotation();
-	USceneComponent* const MuzzleLocation = m_DemoCharacter->GetFirstPersonMuzzleLocation();
-	// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
-	const FVector SpawnLocation = ((MuzzleLocation != nullptr) ? MuzzleLocation->GetComponentLocation() : m_DemoCharacter->GetActorLocation()) + SpawnRotation.RotateVector(m_DemoCharacter->GunOffset);
-
 
 	// spawn the projectile at the muzzle
 	FActorSpawnParameters ActorSpawnParams;
 	APhysicsProjectile* PhysicsProjectile = World->SpawnActor<APhysicsProjectile>(PhysicsProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
 	if (PhysicsProjectile == nullptr)
 	{
-		return;
+		return false;
 	}
 
 	PhysicsProjectile->SetPhysicsParameters(m_GravityValue, m_PhysicsProjectileSpeed, SpawnRotation.Vector());
+	return true;
 }
 
 void ADemoWeapon::UpdateLandingMarkerPosition()
@@ -155,10 +178,32 @@ void ADemoWeapon::UpdateLandingMarkerPosition()
 	}	
 }
 
-void ADemoWeapon::FireGuidedProjectile()
+bool ADemoWeapon::FireGuidedProjectile(const FVector& SpawnLocation, const FRotator& SpawnRotation)
+{
+	UWorld* const World = GetWorld();
+	if (PhysicsProjectileClass == nullptr || World == nullptr)
+	{
+		return false;
+	}
+
+	// spawn the projectile at the muzzle
+	FActorSpawnParameters ActorSpawnParams;
+	m_GuidedProjectile = World->SpawnActor<ALinearProjectile>(GuidedProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+	if (m_GuidedProjectile == nullptr)
+	{
+		return false;
+	}
+
+	m_GuidedProjectile->SetSpeed(m_PhysicsProjectileSpeed);
+	m_GuidedProjectile->SetVelocityDirection(SpawnRotation.Vector());
+	return true;
+}
+
+void ADemoWeapon::GuideGuidedProjectile()
 {
 
 }
+
 #pragma optimize("",on)
 
 

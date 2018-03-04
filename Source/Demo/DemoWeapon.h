@@ -49,6 +49,17 @@ class DEMO_API ADemoWeapon : public AActor
 	UPROPERTY(Transient)
 	AActor* m_LandingMarker;
 
+	/** Guided Projectile Class to spawn */
+	UPROPERTY(EditDefaultsOnly, Category=Projectile)
+	TSubclassOf<class ALinearProjectile> GuidedProjectileClass;
+
+	UPROPERTY(Transient)
+	ALinearProjectile* m_GuidedProjectile;
+
+	/** Guided Projectile Speed */
+	UPROPERTY(EditAnywhere, Transient, Category = Projectile)
+	float m_GuidedProjectileSpeed;
+
 public:
 	
 	ADemoWeapon();
@@ -61,7 +72,7 @@ public:
 	void ChangeFireMode();
 
 	/** Weapon firing */
-	void Fire();
+	bool Fire();
 
 protected:
 
@@ -70,11 +81,14 @@ protected:
 private:
 
 	/** When shooting on Physics Fire Mode */
-	void FirePhysicsProjectile();
+	bool FirePhysicsProjectile(const FVector& SpawnLocation, const FRotator& SpawnRotation);
 
 	/** Update Landking Marker Position while on Physics Fire Mode */
 	void UpdateLandingMarkerPosition();
 
-	void FireGuidedProjectile();
+	bool FireGuidedProjectile(const FVector& SpawnLocation, const FRotator& SpawnRotation);
+
+	/** Update Guided Projectile Direction while on Guided Fire Mode */
+	void GuideGuidedProjectile();
 
 };
