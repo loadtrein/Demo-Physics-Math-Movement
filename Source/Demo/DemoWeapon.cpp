@@ -158,7 +158,7 @@ bool ADemoWeapon::FirePhysicsProjectile(const FVector& SpawnLocation, const FRot
 
 void ADemoWeapon::UpdateLandingMarkerPosition()
 {
-	// All the calculations start from the general projectile motion formulae
+	// All the calculations are based on the general projectile motion formulae
 
 	// First, we calculate the time it takes for the projectile to reach the ground (Z equals to 0) with a giving Firing Direction
 
