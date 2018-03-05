@@ -7,6 +7,7 @@ APhysicsProjectile::APhysicsProjectile()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	// Projectile's Sphere Static Mesh Component
 	SphereMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SphereMesh"));
 	RootComponent = SphereMesh;
 
@@ -39,7 +40,7 @@ void APhysicsProjectile::SetPhysicsParameters(float Gravity, float Speed, FVecto
 void APhysicsProjectile::SimulateProjectilePhysics(float DeltaTime)
 {
 	FVector Velocity = m_FiringDirection * m_Speed * m_CurrentTime;
-	FVector GravityAcceleration = (m_GravityVector * m_CurrentTime * m_CurrentTime) / 2.0f;
+	FVector GravityAcceleration = (m_GravityVector * FMath::Square(m_CurrentTime)) / 2.0f;
 
 	m_CurrentPosition = m_InitialPosition + Velocity + GravityAcceleration;
 	SetActorLocation(m_CurrentPosition);

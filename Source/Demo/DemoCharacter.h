@@ -109,7 +109,7 @@ public:
 	/** Returns FirstPersonCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 	/** Returns FirstPersonMuzzleLocation subobject **/
-	FORCEINLINE class USceneComponent* GetFirstPersonMuzzleLocation() const { return FP_MuzzleLocation; }
+	FORCEINLINE class USceneComponent* GetFirstPersonMuzzleComponent() const { return FP_MuzzleLocation; }
 
 };
 

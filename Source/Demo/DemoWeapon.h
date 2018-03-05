@@ -53,6 +53,7 @@ class DEMO_API ADemoWeapon : public AActor
 	UPROPERTY(EditDefaultsOnly, Category=GuidedProjectile)
 	TSubclassOf<class ALinearProjectile> GuidedProjectileClass;
 
+	/** Current Guided Projectile Actor */
 	UPROPERTY(Transient)
 	ALinearProjectile* m_GuidedProjectile;
 
@@ -60,12 +61,25 @@ class DEMO_API ADemoWeapon : public AActor
 	UPROPERTY(EditAnywhere, Transient, Category=GuidedProjectile)
 	float m_GuidedProjectileSpeed;
 
-	/** Guided Projectile Speed */
+	/** Guided Projectile Distance To Objective Threshold */
 	UPROPERTY(EditAnywhere, Transient, Category=GuidedProjectile)
 	float m_GuidedProjectileDistanceToObjectiveThreshold;
 
+	/** Guided Projectile Turn Rate */
 	UPROPERTY(EditAnywhere, Transient, Category=GuidedProjectile)
 	float m_GuidedProjectileAngularVelocity;
+
+	/** GuidedProjectile-Weapon Range distance */
+	UPROPERTY(EditAnywhere, Transient, Category=GuidedProjectile)
+	float m_GuidedProjectileRange;
+
+	/** GuidedProjectile Trace offset from camera that will define the trace start */
+	UPROPERTY(EditAnywhere, Transient, Category=GuidedProjectile)
+	float m_GuidedProjectileTraceCameraOffset;
+
+	/** Guided Projectile Trace Length */
+	UPROPERTY(EditAnywhere, Transient, Category=GuidedProjectile)
+	float m_GuidedProjectileTraceLength;
 
 public:
 	
@@ -93,6 +107,7 @@ private:
 	/** Update Landking Marker Position while on Physics Fire Mode */
 	void UpdateLandingMarkerPosition();
 
+	/** When shooting on Guided Fire Mode */
 	bool FireGuidedProjectile(const FVector& SpawnLocation, const FRotator& SpawnRotation);
 
 	/** Update Guided Projectile Direction while on Guided Fire Mode */

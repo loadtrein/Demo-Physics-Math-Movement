@@ -26,6 +26,7 @@ class DEMO_API APhysicsProjectile : public AActor
 	UPROPERTY(Transient)
 	float m_Speed;
 
+	/** Direction the weapon was fired in */
 	UPROPERTY(Transient)
 	FVector m_FiringDirection;
 

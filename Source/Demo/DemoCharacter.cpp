@@ -116,6 +116,7 @@ void ADemoCharacter::OnFire()
 		return;
 	}
 
+	// If fired successfully, play sound and animations
 	if (m_DemoWeapon->Fire())
 	{
 		PlaySoundAndAnimations();
@@ -129,6 +130,7 @@ void ADemoCharacter::OnWeaponFireModeChange()
 		return;
 	}
 
+	// Change weapon's fire mode
 	m_DemoWeapon->ChangeFireMode();
 }
 

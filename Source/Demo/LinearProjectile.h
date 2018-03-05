@@ -11,17 +11,15 @@ class DEMO_API ALinearProjectile : public AActor
 {
 	GENERATED_BODY()
 
-	/** Sphere component */
-	UPROPERTY(VisibleDefaultsOnly, Category=Projectile)
-	class UStaticMeshComponent* SphereMesh;
-
-	UPROPERTY(Transient)
-	FVector m_CurrentPosition;
+	/** Sphere collision component */
+	UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
+	class USphereComponent* CollisionComp;
 
 	/** Speed at which the projectile left the weapon*/
 	UPROPERTY(Transient)
 	float m_Speed;
 
+	/** Current Velocity Direction */
 	UPROPERTY(Transient)
 	FVector m_VelocityDirection;
 
@@ -39,8 +37,12 @@ public:
 	/** Set physics parameters from weapon */
 	void SetSpeed(float Speed);
 	void SetVelocityDirection(FVector VelocityDirection);
+
 	FVector GetVelocityDirection();
-	void DestroyProjectile();
+
+	/** called when projectile hits something */
+	UFUNCTION()
+	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 protected:
 	

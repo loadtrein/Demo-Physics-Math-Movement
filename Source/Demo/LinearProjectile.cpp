@@ -2,13 +2,19 @@
 
 #include "LinearProjectile.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/SphereComponent.h"
 
 ALinearProjectile::ALinearProjectile()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	SphereMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SphereMesh"));
-	RootComponent = SphereMesh;
+	// Use a sphere as a simple collision representation
+	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
+	CollisionComp->InitSphereRadius(5.0f);
+	CollisionComp->SetNotifyRigidBodyCollision(true);
+	CollisionComp->OnComponentHit.AddDynamic(this, &ALinearProjectile::OnHit); // set up a notification for when this component hits something blocking
+
+	RootComponent = CollisionComp;
 
 	InitialLifeSpan = 10.0f;
 }
@@ -37,10 +43,12 @@ void ALinearProjectile::SetVelocityDirection(FVector VelocityDirection)
 
 void ALinearProjectile::SimulateMovement(float DeltaTime)
 {
+	// Simulate Linear Movement
 	FVector Velocity = m_VelocityDirection * m_Speed;
-	m_CurrentPosition = GetActorLocation() + Velocity * DeltaTime;
+	FVector CurrentPosition = GetActorLocation() + Velocity * DeltaTime;
 	
-	SetActorLocation(m_CurrentPosition);
+	// Setting actor location with sweep to obtain collision hit events and so trigger sound and destroy the object
+	SetActorLocation(CurrentPosition, true);
 }
 
 FVector ALinearProjectile::GetVelocityDirection()
@@ -48,14 +56,18 @@ FVector ALinearProjectile::GetVelocityDirection()
 	return m_VelocityDirection;
 }
 
-void ALinearProjectile::DestroyProjectile()
+void ALinearProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	// try and play the sound if specified
-	if (m_DestroySound != NULL)
-	{
-		UGameplayStatics::PlaySoundAtLocation(this, m_DestroySound, GetActorLocation());
-	}
+	// On Hit play Destroy sound and destroy the projectile
 
-	Destroy();
+	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL))
+	{
+		if (m_DestroySound != NULL)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, m_DestroySound, GetActorLocation());
+		}
+
+		Destroy();
+	}
 }
 
