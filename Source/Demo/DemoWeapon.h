@@ -89,7 +89,7 @@ public:
 	/** Sets weapon owner */
 	void SetCharacter(ADemoCharacter* DemoCharacter);
 
-	/** Chages weapon fire mode */
+	/** Changes weapon fire mode */
 	void ChangeFireMode();
 
 	/** Weapon firing */
@@ -104,7 +104,7 @@ private:
 	/** When shooting on Physics Fire Mode */
 	bool FirePhysicsProjectile(const FVector& SpawnLocation, const FRotator& SpawnRotation);
 
-	/** Update Landking Marker Position while on Physics Fire Mode */
+	/** Update Landing Marker Position while on Physics Fire Mode */
 	void UpdateLandingMarkerPosition();
 
 	/** When shooting on Guided Fire Mode */
