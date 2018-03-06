@@ -42,8 +42,8 @@ void APhysicsProjectile::SimulateProjectilePhysics(float DeltaTime)
 	const FVector Velocity = m_FiringDirection * m_Speed * m_CurrentTime;
 	const FVector GravityAcceleration = (m_GravityVector * FMath::Square(m_CurrentTime)) / 2.0f;
 
-	m_CurrentPosition = m_InitialPosition + Velocity + GravityAcceleration;
-	SetActorLocation(m_CurrentPosition);
+	const FVector CurrentPosition = m_InitialPosition + Velocity + GravityAcceleration;
+	SetActorLocation(CurrentPosition);
 
 	m_CurrentTime += DeltaTime;
 }

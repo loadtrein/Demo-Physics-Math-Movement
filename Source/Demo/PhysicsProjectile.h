@@ -19,9 +19,6 @@ class DEMO_API APhysicsProjectile : public AActor
 	UPROPERTY(Transient)
 	FVector m_InitialPosition;
 
-	UPROPERTY(Transient)
-	FVector m_CurrentPosition;
-
 	/** Speed at which the projectile left the weapon*/
 	UPROPERTY(Transient)
 	float m_Speed;
