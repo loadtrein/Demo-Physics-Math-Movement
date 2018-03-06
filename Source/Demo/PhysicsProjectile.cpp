@@ -28,7 +28,7 @@ void APhysicsProjectile::Tick(float DeltaTime)
 	SimulateProjectilePhysics(DeltaTime);
 }
 
-void APhysicsProjectile::SetPhysicsParameters(float Gravity, float Speed, FVector FiringDirection)
+void APhysicsProjectile::SetPhysicsParameters(float Gravity, float Speed, const FVector& FiringDirection)
 {
 	m_FiringDirection = FiringDirection;
 	m_GravityValue = Gravity;
@@ -39,8 +39,8 @@ void APhysicsProjectile::SetPhysicsParameters(float Gravity, float Speed, FVecto
 
 void APhysicsProjectile::SimulateProjectilePhysics(float DeltaTime)
 {
-	FVector Velocity = m_FiringDirection * m_Speed * m_CurrentTime;
-	FVector GravityAcceleration = (m_GravityVector * FMath::Square(m_CurrentTime)) / 2.0f;
+	const FVector Velocity = m_FiringDirection * m_Speed * m_CurrentTime;
+	const FVector GravityAcceleration = (m_GravityVector * FMath::Square(m_CurrentTime)) / 2.0f;
 
 	m_CurrentPosition = m_InitialPosition + Velocity + GravityAcceleration;
 	SetActorLocation(m_CurrentPosition);

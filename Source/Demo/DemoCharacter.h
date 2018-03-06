@@ -74,7 +74,7 @@ protected:
 	void OnWeaponFireModeChange();
 
 	/** Plays sound and animations when firing */
-	void PlaySoundAndAnimations();
+	void PlaySoundAndAnimations() const;
 
 	/** Handles moving forward/backward */
 	void MoveForward(float Val);

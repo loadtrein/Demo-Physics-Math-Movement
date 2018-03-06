@@ -46,7 +46,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	/** Set physics parameters from weapon */
-	void SetPhysicsParameters(float Gravity, float Speed, FVector FiringDirection);
+	void SetPhysicsParameters(float Gravity, float Speed, const FVector& FiringDirection);
 
 protected:
 

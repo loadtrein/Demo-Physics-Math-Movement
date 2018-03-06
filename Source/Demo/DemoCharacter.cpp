@@ -133,7 +133,7 @@ void ADemoCharacter::OnWeaponFireModeChange()
 	m_DemoWeapon->ChangeFireMode();
 }
 
-void ADemoCharacter::PlaySoundAndAnimations()
+void ADemoCharacter::PlaySoundAndAnimations() const
 {
 	// try and play the sound if specified
 	if (FireSound != NULL)

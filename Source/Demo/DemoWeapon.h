@@ -102,15 +102,15 @@ protected:
 private:
 
 	/** When shooting on Physics Fire Mode */
-	bool FirePhysicsProjectile(const FVector& SpawnLocation, const FRotator& SpawnRotation);
+	bool FirePhysicsProjectile(const FVector& SpawnLocation, const FRotator& SpawnRotation) const;
 
 	/** Update Landing Marker Position while on Physics Fire Mode */
-	void UpdateLandingMarkerPosition();
+	void UpdateLandingMarkerPosition() const;
 
 	/** When shooting on Guided Fire Mode */
 	bool FireGuidedProjectile(const FVector& SpawnLocation, const FRotator& SpawnRotation);
 
 	/** Update Guided Projectile Direction while on Guided Fire Mode */
-	void GuideGuidedProjectile(float DeltaTime);
+	void GuideGuidedProjectile(float DeltaTime) const;
 
 };

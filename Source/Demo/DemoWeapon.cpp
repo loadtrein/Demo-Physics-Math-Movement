@@ -109,7 +109,7 @@ bool ADemoWeapon::Fire()
 	const FRotator SpawnRotation = m_DemoCharacter->GetControlRotation();
 	
 	// GunOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
-	USceneComponent* const MuzzleComponent = m_DemoCharacter->GetFirstPersonMuzzleComponent();
+	const USceneComponent* const MuzzleComponent = m_DemoCharacter->GetFirstPersonMuzzleComponent();
 	const FVector SpawnLocation = ((MuzzleComponent != nullptr) ? MuzzleComponent->GetComponentLocation() : m_DemoCharacter->GetActorLocation()) + SpawnRotation.RotateVector(m_DemoCharacter->GunOffset);
 
 	bool fireOk = false;
@@ -135,7 +135,7 @@ bool ADemoWeapon::Fire()
 	return fireOk;
 }
 
-bool ADemoWeapon::FirePhysicsProjectile(const FVector& SpawnLocation, const FRotator& SpawnRotation)
+bool ADemoWeapon::FirePhysicsProjectile(const FVector& SpawnLocation, const FRotator& SpawnRotation) const
 {
 	UWorld* const World = GetWorld();
 	if (PhysicsProjectileClass == nullptr || World == nullptr)
@@ -156,13 +156,13 @@ bool ADemoWeapon::FirePhysicsProjectile(const FVector& SpawnLocation, const FRot
 	return true;
 }
 
-void ADemoWeapon::UpdateLandingMarkerPosition()
+void ADemoWeapon::UpdateLandingMarkerPosition() const
 {
 	// All the calculations are based on the general projectile motion formulae
 
 	// First, we calculate the time it takes for the projectile to reach the ground (Z equals to 0) with a giving Firing Direction
 
-	USceneComponent* const MuzzleComponent = m_DemoCharacter->GetFirstPersonMuzzleComponent();
+	const USceneComponent* const MuzzleComponent = m_DemoCharacter->GetFirstPersonMuzzleComponent();
 	const FVector SpawnLocation = ((MuzzleComponent != nullptr) ? MuzzleComponent->GetComponentLocation() : m_DemoCharacter->GetActorLocation()) + 
 		m_DemoCharacter->GetControlRotation().RotateVector(m_DemoCharacter->GunOffset);
 	const FVector FiringDirection = m_DemoCharacter->GetControlRotation().Vector();
@@ -170,18 +170,18 @@ void ADemoWeapon::UpdateLandingMarkerPosition()
 	// We split the solution to the quadratic equation in several steps
 
 	// We first check the equation to have solution and so we check for no negative square roots
-	float FactorInsideSqrt = FMath::Square(FiringDirection.Z * m_PhysicsProjectileSpeed) - 2.0f * m_GravityValue * SpawnLocation.Z;
+	const float FactorInsideSqrt = FMath::Square(FiringDirection.Z * m_PhysicsProjectileSpeed) - 2.0f * m_GravityValue * SpawnLocation.Z;
 	if (FactorInsideSqrt < 0.0f)
 	{
 		return;
 	}
 	
 	// Secondly, we obtain the two solutions for the quadratic equation
-	float TimeToLand1 = (-(FiringDirection.Z * m_PhysicsProjectileSpeed) + FMath::Sqrt(FactorInsideSqrt)) / m_GravityValue;
-	float TimeToLand2 = (-(FiringDirection.Z * m_PhysicsProjectileSpeed) - FMath::Sqrt(FactorInsideSqrt)) / m_GravityValue;
+	const float TimeToLand1 = (-(FiringDirection.Z * m_PhysicsProjectileSpeed) + FMath::Sqrt(FactorInsideSqrt)) / m_GravityValue;
+	const float TimeToLand2 = (-(FiringDirection.Z * m_PhysicsProjectileSpeed) - FMath::Sqrt(FactorInsideSqrt)) / m_GravityValue;
 
 	// Time to land will be the maximum of the two solutions
-	float TimeToLand = FMath::Max(TimeToLand1, TimeToLand2);
+	const float TimeToLand = FMath::Max(TimeToLand1, TimeToLand2);
 
 	// Now since we know the time it takes for the projectile to land, we can calculate the landing spot for x and y for that time value (z is already known and equals to 0)
 	// Gravity for x and y is 0, for code simplicity it has been deleted from the equations below
@@ -219,7 +219,7 @@ bool ADemoWeapon::FireGuidedProjectile(const FVector& SpawnLocation, const FRota
 	return true;
 }
 
-void ADemoWeapon::GuideGuidedProjectile(float DeltaTime)
+void ADemoWeapon::GuideGuidedProjectile(float DeltaTime) const
 {
 	UWorld* const World = GetWorld();
 	if (World == nullptr || m_DemoCharacter == nullptr)
@@ -238,8 +238,8 @@ void ADemoWeapon::GuideGuidedProjectile(float DeltaTime)
 	m_DemoCharacter->GetActorEyesViewPoint(CameraLocation, CameraRotation);
 
 	// Calculate Start and End trace values
-	FVector Start = CameraLocation + CameraRotation.Vector() * m_GuidedProjectileTraceCameraOffset;
-	FVector End = Start + CameraRotation.Vector() * m_GuidedProjectileTraceLength;
+	const FVector Start = CameraLocation + CameraRotation.Vector() * m_GuidedProjectileTraceCameraOffset;
+	const FVector End = Start + CameraRotation.Vector() * m_GuidedProjectileTraceLength;
 	FVector TargetLocation = End;
 
 	FCollisionQueryParams TraceParams;
@@ -262,14 +262,14 @@ void ADemoWeapon::GuideGuidedProjectile(float DeltaTime)
 	DrawDebugSphere(World, TargetLocation, 20.0F, 100, FColor::Red);
 
 	// Check for missile being close to objective, if so, we let it go
-	float CurrentDistanceToObjective = FVector::DistSquared(m_GuidedProjectile->GetActorLocation(), TargetLocation);
+	const float CurrentDistanceToObjective = FVector::DistSquared(m_GuidedProjectile->GetActorLocation(), TargetLocation);
 	if (CurrentDistanceToObjective <= FMath::Square(m_GuidedProjectileDistanceToObjectiveThreshold))
 	{
 		return;
 	}
 
 	// Check for missile not being in range. If not in range, we let it go
-	float DistanceBetweenWeaponAndProjectile = FVector::DistSquared(m_GuidedProjectile->GetActorLocation(), m_DemoCharacter->GetActorLocation());
+	const float DistanceBetweenWeaponAndProjectile = FVector::DistSquared(m_GuidedProjectile->GetActorLocation(), m_DemoCharacter->GetActorLocation());
 	if ( DistanceBetweenWeaponAndProjectile >= FMath::Square(m_GuidedProjectileRange))
 	{
 		return;

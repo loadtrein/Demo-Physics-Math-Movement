@@ -36,9 +36,9 @@ public:
 
 	/** Set physics parameters from weapon */
 	void SetSpeed(float Speed);
-	void SetVelocityDirection(FVector VelocityDirection);
+	void SetVelocityDirection(const FVector& VelocityDirection);
 
-	FVector GetVelocityDirection();
+	const FVector& GetVelocityDirection() const;
 
 	/** called when projectile hits something */
 	UFUNCTION()

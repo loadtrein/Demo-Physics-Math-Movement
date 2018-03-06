@@ -36,7 +36,7 @@ void ALinearProjectile::SetSpeed(float Speed)
 	m_Speed = Speed;
 }
 
-void ALinearProjectile::SetVelocityDirection(FVector VelocityDirection)
+void ALinearProjectile::SetVelocityDirection(const FVector& VelocityDirection)
 {
 	m_VelocityDirection = VelocityDirection;
 }
@@ -44,14 +44,14 @@ void ALinearProjectile::SetVelocityDirection(FVector VelocityDirection)
 void ALinearProjectile::SimulateMovement(float DeltaTime)
 {
 	// Simulate Linear Movement
-	FVector Velocity = m_VelocityDirection * m_Speed;
-	FVector CurrentPosition = GetActorLocation() + Velocity * DeltaTime;
+	const FVector Velocity = m_VelocityDirection * m_Speed;
+	const FVector CurrentPosition = GetActorLocation() + Velocity * DeltaTime;
 	
 	// Setting actor location with sweep to obtain collision hit events and so trigger sound and destroy the object
 	SetActorLocation(CurrentPosition, true);
 }
 
-FVector ALinearProjectile::GetVelocityDirection()
+const FVector& ALinearProjectile::GetVelocityDirection() const
 {
 	return m_VelocityDirection;
 }
